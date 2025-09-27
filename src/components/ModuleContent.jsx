@@ -11,6 +11,7 @@ import {
   InteractiveQuiz,
   ResourceLibrary 
 } from './InteractiveElements.jsx'
+import PracticeExercise from './PracticeExercise.jsx'
 import { 
   Play, 
   Brain, 
@@ -21,15 +22,43 @@ import {
   Lightbulb,
   Code,
   Users,
-  Award
+  Award,
+  ArrowRight,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react'
 
 const ModuleContent = ({ module, onComplete }) => {
-  const [activeSection, setActiveSection] = useState('overview')
+  const [activeView, setActiveView] = useState('lesson')
   const [completedSections, setCompletedSections] = useState(new Set())
+  const [expandedSections, setExpandedSections] = useState(new Set(['overview', 'concepts', 'interactive']))
+  const [currentExercise, setCurrentExercise] = useState(null)
 
   const markSectionComplete = (sectionId) => {
     setCompletedSections(prev => new Set([...prev, sectionId]))
+  }
+
+  const toggleSection = (sectionId) => {
+    setExpandedSections(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(sectionId)) {
+        newSet.delete(sectionId)
+      } else {
+        newSet.add(sectionId)
+      }
+      return newSet
+    })
+  }
+
+  const startPracticeExercise = (exerciseType) => {
+    setCurrentExercise({ moduleId: module.id, exerciseType })
+    setActiveView('exercise')
+  }
+
+  const completePracticeExercise = () => {
+    setCurrentExercise(null)
+    setActiveView('practice')
+    markSectionComplete('practice')
   }
 
   const renderInteractiveElement = (element) => {
@@ -55,9 +84,12 @@ const ModuleContent = ({ module, onComplete }) => {
               </div>
               <h3 className="text-lg font-semibold mb-2">{element.title}</h3>
               <p className="text-muted-foreground mb-4">
-                Interactive element: {element.type}
+                {element.description || `Interactive ${element.type} tool`}
               </p>
-              <Button className="course-gradient border-0 text-white">
+              <Button 
+                className="course-gradient border-0 text-white"
+                onClick={() => alert(`${element.title} interactive tool would launch here in the full implementation.`)}
+              >
                 Launch Interactive Tool
               </Button>
             </CardContent>
@@ -66,14 +98,182 @@ const ModuleContent = ({ module, onComplete }) => {
     }
   }
 
-  const sections = [
-    { id: 'overview', title: 'Overview', icon: BookOpen },
-    { id: 'concepts', title: 'Key Concepts', icon: Brain },
-    { id: 'interactive', title: 'Interactive Elements', icon: Play },
-    { id: 'practice', title: 'Practice', icon: Target },
-  ]
+  const progressPercentage = activeView === 'lesson' 
+    ? (completedSections.size / 3) * 100 
+    : activeView === 'practice' 
+    ? completedSections.has('practice') ? 100 : 0
+    : 100
 
-  const progressPercentage = (completedSections.size / sections.length) * 100
+  if (activeView === 'exercise') {
+    return (
+      <PracticeExercise 
+        moduleId={currentExercise.moduleId}
+        exerciseType={currentExercise.exerciseType}
+        onComplete={completePracticeExercise}
+        onBack={() => setActiveView('practice')}
+      />
+    )
+  }
+
+  if (activeView === 'practice') {
+    return (
+      <div className="space-y-6">
+        {/* Module Header */}
+        <Card className="course-card bg-gradient-to-r from-primary/10 to-secondary/10">
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">Module {module.id}</Badge>
+                  <Badge variant="outline" className="gap-1">
+                    <Clock className="w-3 h-3" />
+                    {module.duration}
+                  </Badge>
+                </div>
+                <CardTitle className="text-2xl">{module.title} - Practice</CardTitle>
+                <CardDescription className="text-base">
+                  Apply what you've learned with hands-on exercises and challenges
+                </CardDescription>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-primary">{Math.round(progressPercentage)}%</div>
+                <div className="text-sm text-muted-foreground">Complete</div>
+              </div>
+            </div>
+            <Progress value={progressPercentage} className="h-2 mt-4" />
+          </CardHeader>
+        </Card>
+
+        {/* Navigation */}
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setActiveView('lesson')}
+          >
+            Back to Lesson
+          </Button>
+        </div>
+
+        {/* Practice Content */}
+        <div className="space-y-6">
+          <Card className="course-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="w-5 h-5" />
+                Practice Exercises
+              </CardTitle>
+              <CardDescription>
+                Apply what you've learned with hands-on exercises
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <Card className="border-2 border-dashed border-primary/30 hover:border-primary/60 transition-colors">
+                  <CardContent className="p-6 text-center">
+                    <Users className="w-8 h-8 mx-auto mb-3 text-primary" />
+                    <h4 className="font-semibold mb-2">Guided Practice</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Step-by-step exercises with hints and feedback
+                    </p>
+                    <Button 
+                      className="course-gradient border-0 text-white"
+                      onClick={() => startPracticeExercise('guided')}
+                    >
+                      Start Practice
+                    </Button>
+                  </CardContent>
+                </Card>
+                
+                <Card className="border-2 border-dashed border-secondary/30 hover:border-secondary/60 transition-colors">
+                  <CardContent className="p-6 text-center">
+                    <Award className="w-8 h-8 mx-auto mb-3 text-secondary" />
+                    <h4 className="font-semibold mb-2">Challenge Mode</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Test your skills with advanced scenarios
+                    </p>
+                    <Button 
+                      variant="outline"
+                      onClick={() => startPracticeExercise('challenge')}
+                    >
+                      Take Challenge
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              {/* Practice Scenarios */}
+              <div className="space-y-4 mt-6">
+                <h4 className="font-semibold">Practice Scenarios</h4>
+                <div className="grid gap-3">
+                  {[
+                    { title: "Business Email Generation", difficulty: "Beginner", time: "10 min" },
+                    { title: "Technical Documentation", difficulty: "Intermediate", time: "15 min" },
+                    { title: "Creative Content Creation", difficulty: "Advanced", time: "20 min" }
+                  ].map((scenario, index) => (
+                    <Card key={index} className="course-card hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg course-gradient">
+                              <Code className="w-4 h-4 text-white" />
+                            </div>
+                            <div>
+                              <h5 className="font-medium">{scenario.title}</h5>
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Badge variant="outline" className="text-xs">{scenario.difficulty}</Badge>
+                                <span>{scenario.time}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => alert(`${scenario.title} practice scenario would launch here with specific prompting challenges related to this use case.`)}
+                          >
+                            Start
+                            <ArrowRight className="w-3 h-3 ml-1" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+              
+              <Button 
+                onClick={() => markSectionComplete('practice')}
+                className="w-full course-gradient border-0 text-white"
+              >
+                Complete Practice Section
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        {completedSections.has('practice') && (
+          <Card className="course-card bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 border-green-200 dark:border-green-800">
+            <CardContent className="p-6 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-600 flex items-center justify-center">
+                <CheckCircle className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Practice Complete! 🎉</h3>
+              <p className="text-muted-foreground mb-4">
+                Great job! You've completed all practice exercises for {module.title}.
+              </p>
+              <div className="flex gap-2 justify-center">
+                <Button onClick={onComplete} className="course-gradient border-0 text-white">
+                  Continue to Next Module
+                </Button>
+                <Button variant="outline" onClick={() => setActiveView('lesson')}>
+                  Review Lesson
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -103,78 +303,100 @@ const ModuleContent = ({ module, onComplete }) => {
         </CardHeader>
       </Card>
 
-      {/* Section Navigation */}
-      <div className="flex flex-wrap gap-2">
-        {sections.map((section) => {
-          const Icon = section.icon
-          const isCompleted = completedSections.has(section.id)
-          const isActive = activeSection === section.id
-          
-          return (
-            <Button
-              key={section.id}
-              variant={isActive ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActiveSection(section.id)}
-              className={`gap-2 ${isActive ? "course-gradient border-0 text-white" : ""}`}
-            >
-              {isCompleted ? (
-                <CheckCircle className="w-4 h-4 text-green-600" />
-              ) : (
-                <Icon className="w-4 h-4" />
-              )}
-              {section.title}
-            </Button>
-          )
-        })}
+      {/* Navigation */}
+      <div className="flex gap-2">
+        <Button
+          variant={activeView === 'lesson' ? "default" : "outline"}
+          onClick={() => setActiveView('lesson')}
+          className={activeView === 'lesson' ? "course-gradient border-0 text-white" : ""}
+        >
+          <BookOpen className="w-4 h-4 mr-2" />
+          Lesson Content
+        </Button>
+        <Button
+          variant={activeView === 'practice' ? "default" : "outline"}
+          onClick={() => setActiveView('practice')}
+          className={activeView === 'practice' ? "course-gradient border-0 text-white" : ""}
+        >
+          <Target className="w-4 h-4 mr-2" />
+          Practice
+        </Button>
       </div>
 
-      {/* Content Sections */}
-      {activeSection === 'overview' && (
+      {/* Lesson Content */}
+      <div className="space-y-8">
+        {/* Overview Section */}
         <Card className="course-card">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5" />
-              Module Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-foreground/80 leading-relaxed">
-              {module.content.overview}
-            </p>
-            <div className="space-y-2">
-              <h4 className="font-semibold">What you'll learn:</h4>
-              <ul className="space-y-2">
-                {module.content.keyPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm">{point}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5" />
+                Module Overview
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleSection('overview')}
+              >
+                {expandedSections.has('overview') ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </Button>
             </div>
-            <Button 
-              onClick={() => markSectionComplete('overview')}
-              className="course-gradient border-0 text-white"
-            >
-              Mark as Complete
-            </Button>
-          </CardContent>
+          </CardHeader>
+          {expandedSections.has('overview') && (
+            <CardContent className="space-y-4">
+              <p className="text-foreground/80 leading-relaxed">
+                {module.content.overview}
+              </p>
+              <div className="space-y-2">
+                <h4 className="font-semibold">What you'll learn:</h4>
+                <ul className="space-y-2">
+                  {module.content.keyPoints.map((point, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Button 
+                onClick={() => markSectionComplete('overview')}
+                className="course-gradient border-0 text-white"
+                disabled={completedSections.has('overview')}
+              >
+                {completedSections.has('overview') ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Completed
+                  </>
+                ) : (
+                  'Mark Overview Complete'
+                )}
+              </Button>
+            </CardContent>
+          )}
         </Card>
-      )}
 
-      {activeSection === 'concepts' && (
-        <div className="space-y-6">
-          <Card className="course-card">
-            <CardHeader>
+        {/* Key Concepts Section */}
+        <Card className="course-card">
+          <CardHeader>
+            <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <Brain className="w-5 h-5" />
                 Key Concepts
               </CardTitle>
-              <CardDescription>
-                Master these fundamental concepts to excel in this module
-              </CardDescription>
-            </CardHeader>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleSection('concepts')}
+              >
+                {expandedSections.has('concepts') ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </Button>
+            </div>
+            <CardDescription>
+              Master these fundamental concepts to excel in this module
+            </CardDescription>
+          </CardHeader>
+          {expandedSections.has('concepts') && (
             <CardContent>
               <div className="grid gap-4">
                 {module.content.keyPoints.map((concept, index) => (
@@ -191,111 +413,94 @@ const ModuleContent = ({ module, onComplete }) => {
               <Button 
                 onClick={() => markSectionComplete('concepts')}
                 className="course-gradient border-0 text-white mt-4"
+                disabled={completedSections.has('concepts')}
               >
-                Mark as Complete
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {activeSection === 'interactive' && (
-        <div className="space-y-6">
-          <h3 className="text-xl font-semibold flex items-center gap-2">
-            <Play className="w-5 h-5" />
-            Interactive Elements
-          </h3>
-          {module.content.interactiveElements?.map((element, index) => (
-            <Card key={index} className="course-card">
-              <CardHeader>
-                <CardTitle>{element.title}</CardTitle>
-                {element.description && (
-                  <CardDescription>{element.description}</CardDescription>
+                {completedSections.has('concepts') ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Completed
+                  </>
+                ) : (
+                  'Mark Concepts Complete'
                 )}
-              </CardHeader>
-              <CardContent>
-                {renderInteractiveElement(element)}
-              </CardContent>
-            </Card>
-          ))}
-          <Button 
-            onClick={() => markSectionComplete('interactive')}
-            className="course-gradient border-0 text-white"
-          >
-            Complete Interactive Section
-          </Button>
-        </div>
-      )}
-
-      {activeSection === 'practice' && (
-        <div className="space-y-6">
-          <Card className="course-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="w-5 h-5" />
-                Practice Exercises
-              </CardTitle>
-              <CardDescription>
-                Apply what you've learned with hands-on exercises
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <Card className="border-2 border-dashed border-primary/30 hover:border-primary/60 transition-colors">
-                  <CardContent className="p-6 text-center">
-                    <Users className="w-8 h-8 mx-auto mb-3 text-primary" />
-                    <h4 className="font-semibold mb-2">Guided Practice</h4>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Step-by-step exercises with hints and feedback
-                    </p>
-                    <Button size="sm" className="course-gradient border-0 text-white">
-                      Start Practice
-                    </Button>
-                  </CardContent>
-                </Card>
-                
-                <Card className="border-2 border-dashed border-secondary/30 hover:border-secondary/60 transition-colors">
-                  <CardContent className="p-6 text-center">
-                    <Award className="w-8 h-8 mx-auto mb-3 text-secondary" />
-                    <h4 className="font-semibold mb-2">Challenge Mode</h4>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Test your skills with advanced scenarios
-                    </p>
-                    <Button size="sm" variant="outline">
-                      Take Challenge
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-              
-              <Button 
-                onClick={() => markSectionComplete('practice')}
-                className="w-full course-gradient border-0 text-white"
-              >
-                Complete Practice Section
               </Button>
             </CardContent>
-          </Card>
-        </div>
-      )}
+          )}
+        </Card>
+
+        {/* Interactive Elements Section */}
+        <Card className="course-card">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Play className="w-5 h-5" />
+                Interactive Learning Tools
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleSection('interactive')}
+              >
+                {expandedSections.has('interactive') ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </Button>
+            </div>
+            <CardDescription>
+              Hands-on tools and demonstrations to reinforce your learning
+            </CardDescription>
+          </CardHeader>
+          {expandedSections.has('interactive') && (
+            <CardContent className="space-y-6">
+              {module.content.interactiveElements?.map((element, index) => (
+                <div key={index} className="space-y-4">
+                  <div className="border-l-4 border-primary pl-4">
+                    <h4 className="font-semibold text-lg">{element.title}</h4>
+                    {element.description && (
+                      <p className="text-muted-foreground text-sm mt-1">{element.description}</p>
+                    )}
+                  </div>
+                  {renderInteractiveElement(element)}
+                </div>
+              ))}
+              <Button 
+                onClick={() => markSectionComplete('interactive')}
+                className="course-gradient border-0 text-white"
+                disabled={completedSections.has('interactive')}
+              >
+                {completedSections.has('interactive') ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Completed
+                  </>
+                ) : (
+                  'Complete Interactive Section'
+                )}
+              </Button>
+            </CardContent>
+          )}
+        </Card>
+      </div>
 
       {/* Module Completion */}
-      {completedSections.size === sections.length && (
+      {completedSections.size === 3 && (
         <Card className="course-card bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 border-green-200 dark:border-green-800">
           <CardContent className="p-6 text-center">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-600 flex items-center justify-center">
-              <CheckCircle className="w-8 h-8 text-white" />
+              <CheckCircle className="w-8 w-8 text-white" />
             </div>
-            <h3 className="text-xl font-bold mb-2">Module Complete! 🎉</h3>
+            <h3 className="text-xl font-bold mb-2">Lesson Complete! 🎉</h3>
             <p className="text-muted-foreground mb-4">
-              Congratulations! You've successfully completed {module.title}.
+              Excellent work! You've completed all the lesson content for {module.title}.
             </p>
             <div className="flex gap-2 justify-center">
-              <Button onClick={onComplete} className="course-gradient border-0 text-white">
-                Continue to Next Module
+              <Button 
+                onClick={() => setActiveView('practice')}
+                className="course-gradient border-0 text-white"
+              >
+                Continue to Practice
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
               <Button variant="outline">
-                Review Module
+                Review Lesson
               </Button>
             </div>
           </CardContent>

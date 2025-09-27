@@ -82,6 +82,26 @@ export const PromptBuilder = ({ components }) => {
     setPromptParts(prev => ({ ...prev, [key]: example }))
   }
 
+  const testPrompt = () => {
+    if (!generatedPrompt.trim()) {
+      alert('Please build a prompt first by filling in the components above.')
+      return
+    }
+    alert(`Testing your prompt:\n\n"${generatedPrompt}"\n\nIn a real implementation, this would send your prompt to an AI model and show the results. Your prompt looks well-structured!`)
+  }
+
+  const copyToClipboard = () => {
+    if (!generatedPrompt.trim()) {
+      alert('No prompt to copy. Please build a prompt first.')
+      return
+    }
+    navigator.clipboard.writeText(generatedPrompt).then(() => {
+      alert('Prompt copied to clipboard!')
+    }).catch(() => {
+      alert('Failed to copy prompt. Please select and copy manually.')
+    })
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid md:grid-cols-2 gap-6">
@@ -126,11 +146,17 @@ export const PromptBuilder = ({ components }) => {
             </CardContent>
           </Card>
           <div className="flex gap-2">
-            <Button className="course-gradient border-0 text-white">
+            <Button 
+              className="course-gradient border-0 text-white"
+              onClick={testPrompt}
+            >
               <Play className="w-4 h-4 mr-2" />
               Test Prompt
             </Button>
-            <Button variant="outline">
+            <Button 
+              variant="outline"
+              onClick={copyToClipboard}
+            >
               Copy to Clipboard
             </Button>
           </div>
@@ -207,7 +233,10 @@ export const TechniqueComparison = ({ techniques }) => {
                     </div>
                   </div>
                   
-                  <Button className="w-full course-gradient border-0 text-white">
+                  <Button 
+                    className="w-full course-gradient border-0 text-white"
+                    onClick={() => alert(`Testing "${technique.name}" with input: "${testInput}"\n\nExample prompt:\n${technique.example.replace('[INPUT]', testInput)}\n\nIn a full implementation, this would show actual AI responses using this technique.`)}
+                  >
                     <Play className="w-4 h-4 mr-2" />
                     Try with "{testInput}"
                   </Button>
@@ -460,7 +489,11 @@ export const ResourceLibrary = ({ categories }) => {
                     <p className="text-sm text-muted-foreground capitalize">{resource.type}</p>
                   </div>
                 </div>
-                <Button size="sm" variant="outline">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => alert(`Opening ${resource.title}\n\nType: ${resource.type}\n\nIn a full implementation, this would open the actual resource, paper, or tool.`)}
+                >
                   View
                   <ArrowRight className="w-3 h-3 ml-1" />
                 </Button>
