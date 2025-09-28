@@ -75,6 +75,33 @@ const ModuleContent = ({ module, onComplete }) => {
         return <InteractiveQuiz questions={element.questions} />
       case 'resourceLibrary':
         return <ResourceLibrary categories={element.categories} />
+      case 'diagramInteractive':
+        return (
+          <Card className="course-card">
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold mb-4">{element.title}</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {element.components?.map((component, idx) => (
+                    <div key={idx} className="p-4 rounded-lg border-2 border-dashed" style={{borderColor: component.color}}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-4 h-4 rounded-full" style={{backgroundColor: component.color}}></div>
+                        <h4 className="font-semibold text-sm">{component.label}</h4>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{component.description}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 p-3 bg-muted/20 rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    This diagram shows how the four key components work together to create effective prompts. 
+                    Each component has a specific role and connects to the others to guide AI model behavior.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )
       default:
         return (
           <Card className="course-card">
@@ -86,12 +113,9 @@ const ModuleContent = ({ module, onComplete }) => {
               <p className="text-muted-foreground mb-4">
                 {element.description || `Interactive ${element.type} tool`}
               </p>
-              <Button 
-                className="course-gradient border-0 text-white"
-                onClick={() => alert(`${element.title} interactive tool would launch here in the full implementation.`)}
-              >
-                Launch Interactive Tool
-              </Button>
+              <div className="text-sm text-muted-foreground">
+                This interactive element is available in the full course implementation.
+              </div>
             </CardContent>
           </Card>
         )
