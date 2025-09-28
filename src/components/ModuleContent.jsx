@@ -205,38 +205,59 @@ const ModuleContent = ({ module, onComplete }) => {
               <div className="space-y-4 mt-6">
                 <h4 className="font-semibold">Practice Scenarios</h4>
                 <div className="grid gap-3">
-                  {[
-                    { title: "Business Email Generation", difficulty: "Beginner", time: "10 min" },
-                    { title: "Technical Documentation", difficulty: "Intermediate", time: "15 min" },
-                    { title: "Creative Content Creation", difficulty: "Advanced", time: "20 min" }
-                  ].map((scenario, index) => (
-                    <Card key={index} className="course-card hover:shadow-md transition-shadow">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg course-gradient">
-                              <Code className="w-4 h-4 text-white" />
-                            </div>
-                            <div>
-                              <h5 className="font-medium">{scenario.title}</h5>
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Badge variant="outline" className="text-xs">{scenario.difficulty}</Badge>
-                                <span>{scenario.time}</span>
-                              </div>
+                  <Card className="course-card hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg course-gradient">
+                            <Users className="w-4 h-4 text-white" />
+                          </div>
+                          <div>
+                            <h5 className="font-medium">Guided Practice Exercise</h5>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Badge variant="outline" className="text-xs">Beginner</Badge>
+                              <span>15-20 min</span>
                             </div>
                           </div>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => alert(`${scenario.title} practice scenario would launch here with specific prompting challenges related to this use case.`)}
-                          >
-                            Start
-                            <ArrowRight className="w-3 h-3 ml-1" />
-                          </Button>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => startPracticeExercise('guided')}
+                        >
+                          Start
+                          <ArrowRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="course-card hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-500">
+                            <Award className="w-4 h-4 text-white" />
+                          </div>
+                          <div>
+                            <h5 className="font-medium">Challenge Exercise</h5>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Badge variant="outline" className="text-xs">Advanced</Badge>
+                              <span>25-30 min</span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => startPracticeExercise('challenge')}
+                        >
+                          Start
+                          <ArrowRight className="w-3 h-3 ml-1" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
               
