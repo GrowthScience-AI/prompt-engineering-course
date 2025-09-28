@@ -140,7 +140,7 @@ export const PromptBuilder = ({ components }) => {
           <h3 className="text-lg font-semibold">Generated Prompt</h3>
           <Card className="course-card">
             <CardContent className="p-4">
-              <pre className="whitespace-pre-wrap text-sm text-foreground/80 min-h-[200px]">
+              <pre className="whitespace-pre-wrap text-sm text-slate-900 dark:text-slate-100 min-h-[200px]">
                 {generatedPrompt || "Start building your prompt by filling in the components on the left..."}
               </pre>
             </CardContent>
@@ -203,7 +203,7 @@ export const TechniqueComparison = ({ techniques }) => {
                 <CardContent className="space-y-4">
                   <div>
                     <h4 className="font-medium mb-2">Example Prompt:</h4>
-                    <div className="bg-muted/50 p-3 rounded-lg text-sm font-mono">
+                    <div className="bg-muted/50 p-3 rounded-lg text-sm font-mono text-slate-900 dark:text-slate-100">
                       {technique.example}
                     </div>
                   </div>
@@ -278,7 +278,7 @@ export const BeforeAfterGallery = ({ examples }) => {
           </CardHeader>
           <CardContent>
             <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
-              <code className="text-sm">{examples[selectedExample].before}</code>
+              <code className="text-sm text-slate-900 dark:text-red-100">{examples[selectedExample].before}</code>
             </div>
           </CardContent>
         </Card>
@@ -290,7 +290,7 @@ export const BeforeAfterGallery = ({ examples }) => {
           </CardHeader>
           <CardContent>
             <div className="bg-green-50 dark:bg-green-950/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
-              <code className="text-sm">{examples[selectedExample].after}</code>
+              <code className="text-sm text-slate-900 dark:text-green-100">{examples[selectedExample].after}</code>
             </div>
           </CardContent>
         </Card>
