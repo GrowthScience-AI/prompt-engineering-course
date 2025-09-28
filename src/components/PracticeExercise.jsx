@@ -150,10 +150,10 @@ const PracticeExercise = ({ moduleId, exerciseType, onComplete, onBack }) => {
               <BookOpen className="w-4 h-4" />
               Key Learning Points
             </h4>
-            <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed mb-3">
+            <p className="text-sm text-slate-900 dark:text-blue-200 leading-relaxed mb-3">
               {exercise.description}
             </p>
-            <ul className="text-sm space-y-1 text-blue-700 dark:text-blue-300">
+            <ul className="text-sm space-y-1 text-slate-900 dark:text-blue-300">
               {exercise.steps.map((step, index) => (
                 <li key={index}>• {step.title}: {step.instruction}</li>
               ))}
@@ -227,7 +227,7 @@ const PracticeExercise = ({ moduleId, exerciseType, onComplete, onBack }) => {
               <BookOpen className="w-4 h-4" />
               Scenario
             </h4>
-            <p className="text-blue-800 dark:text-blue-200 leading-relaxed">
+            <p className="text-slate-900 dark:text-blue-200 leading-relaxed">
               {currentStepData.scenario}
             </p>
           </div>
@@ -255,7 +255,7 @@ const PracticeExercise = ({ moduleId, exerciseType, onComplete, onBack }) => {
                 <Lightbulb className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
                 <div>
                   <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Hint:</h4>
-                  <p className="text-yellow-800 dark:text-yellow-200 leading-relaxed">
+                  <p className="text-slate-900 dark:text-yellow-200 leading-relaxed">
                     {currentStepData.hint}
                   </p>
                 </div>
@@ -270,7 +270,7 @@ const PracticeExercise = ({ moduleId, exerciseType, onComplete, onBack }) => {
                 <Star className="w-4 h-4" />
                 Feedback
               </h4>
-              <p className="text-slate-800 dark:text-slate-200 leading-relaxed mb-4">
+              <p className="text-slate-900 dark:text-slate-200 leading-relaxed mb-4">
                 {feedback}
               </p>
               {stepScores[currentStep] && (
