@@ -3,14 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
 import { Progress } from '@/components/ui/progress.jsx'
-import { 
-  InteractiveTimeline, 
-  PromptBuilder, 
-  TechniqueComparison, 
-  BeforeAfterGallery, 
-  InteractiveQuiz,
-  ResourceLibrary 
-} from './InteractiveElements.jsx'
+import { InteractiveTimeline, PromptBuilder, TechniqueComparison, BeforeAfterGallery, InteractiveQuiz, ResourceLibrary } from './InteractiveElements'
+import { ChainOfThoughtBuilder, MultiPersonaLab, WorkflowBuilder } from './AdvancedInteractiveElements'
 import PracticeExercise from './PracticeExercise.jsx'
 import { 
   Play, 
@@ -75,6 +69,12 @@ const ModuleContent = ({ module, onComplete }) => {
         return <InteractiveQuiz questions={element.questions} />
       case 'resourceLibrary':
         return <ResourceLibrary categories={element.categories} />
+      case 'chainOfThought':
+        return <ChainOfThoughtBuilder examples={element.examples} />
+      case 'roleBasedPrompting':
+        return <MultiPersonaLab personas={element.personas} />
+      case 'workflowDesigner':
+        return <WorkflowBuilder templates={element.templates} />
       case 'diagramInteractive':
         return (
           <Card className="course-card">
